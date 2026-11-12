@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>localhost: a tiny local-only static file server</title>
+<meta name="description" content="A small static file server for your own machine. Binds to 127.0.0.1 and puts many folders on one port.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="localhost: a tiny local-only static file server">
+<meta property="og:description" content="A small static file server for your own machine. Binds to 127.0.0.1 and puts many folders on one port.">
+<meta property="og:url" content="https://megamanics.github.io/localhost/">
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#f6f5f1;--ink:#15171a;--dim:#565b62;--line:#cfcdc5;--ring:#8f8d85;--acc:#0b6b43;--code:#ecebe5;
+--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media(prefers-color-scheme:dark){:root{--bg:#0d0f11;--ink:#e9e7e0;--dim:#a2a79f;--line:#33383d;--ring:#5a6068;--acc:#5fdc9a;--code:#16191c}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:1rem/1.6 var(--sans)}
+main,footer{max-width:44rem;margin:0 auto;padding:0 1.25rem}
+header{max-width:44rem;margin:0 auto;padding:4.5rem 1.25rem 0}
+h1{font:600 1rem/1 var(--mono);margin:0 0 2rem;letter-spacing:.02em}
+h1 span{color:var(--dim);font-weight:400}
+h2{font:600 .8rem/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:3.5rem 0 1rem}
+p{margin:0 0 1rem}
+a{color:var(--acc);text-underline-offset:.2em}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:2px}
+code,pre{font-family:var(--mono);font-size:.875rem}
+p code,li code{background:var(--code);padding:.1em .35em;border-radius:3px;white-space:nowrap}
+pre{margin:0 0 1rem;padding:.9rem 1rem;background:var(--code);border-left:2px solid var(--acc);white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+pre i{font-style:normal;color:var(--dim)}
+
+/* the loop: the address bar's border is one line that leaves the dot and returns to it */
+.bar{position:relative;height:72px;display:flex;align-items:center;padding:0 1.6rem;
+font:500 clamp(1.05rem,5.2vw,2rem)/1 var(--mono);white-space:nowrap}
+.bar b{font-weight:500;color:var(--dim)}
+.bar svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;fill:none}
+.bar rect{stroke:var(--ring);stroke-width:1.5}
+.bar .run{stroke:var(--acc);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:7 93}
+.bar::before{content:"";position:absolute;left:36px;top:0;width:12px;height:12px;margin:-6px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px var(--bg);z-index:1}
+@media(prefers-reduced-motion:no-preference){.bar .run{animation:loop 6s cubic-bezier(.6,0,.4,1) 3}
+@keyframes loop{from{stroke-dashoffset:0}to{stroke-dashoffset:-100}}}
+.cap{font:.8rem/1.5 var(--mono);color:var(--dim);margin:.9rem 0 2.5rem}
+.pitch{font-size:1.25rem;line-height:1.45;max-width:34rem}
+
+nav{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;font-family:var(--mono);font-size:.9rem;margin-top:1.5rem}
+footer{margin-top:4rem;padding-top:1.25rem;padding-bottom:3rem;font:.8rem/1.5 var(--mono);color:var(--dim)}
+footer div{border-top:1px solid var(--line);padding-top:1.25rem}
+</style>
+</head>
+<body>
+<header>
+<h1>localhost <span>/ static file server</span></h1>
+<div class="bar" role="img" aria-label="Address bar showing http://127.0.0.1:8000/">
+<svg aria-hidden="true"><rect width="100%" height="100%" rx="36" ry="36"/><rect class="run" width="100%" height="100%" rx="36" ry="36" pathLength="100"/></svg>
+<span><b>http://</b>127.0.0.1<b>:8000/</b></span>
+</div>
+<p class="cap">Requests leave here and come back here. Nothing off this machine can reach it.</p>
+<p class="pitch">A static file server that does one thing and then shuts up about it. It serves your folders on the loopback address, on one port.</p>
+<nav aria-label="Project links">
+<a href="https://github.com/megamanics/localhost">GitHub</a>
+<a href="https://github.com/megamanics/localhost/releases">Releases</a>
+</nav>
+</header>
+<main>
+<h2 id="install">Install</h2>
+<pre><code>brew install megamanics/tap/localhost</code></pre>
+<p>Or run the container. Each folder mounted under <code>/srv</code> becomes a path.</p>
+<pre><code>docker run -d --name localhost -p 127.0.0.1:8000:8000 \
+  -v ~/prj/3d:/srv/3d:ro -v ~/notes/site:/srv/docs:ro megamanics/localhost</code></pre>
+<p>Or take a binary for macOS or Linux from the <a href="https://github.com/megamanics/localhost/releases">releases page</a>.</p>
+
+<h2 id="use">Use</h2>
+<pre><code>localhost [DIR] [NAME=DIR ...] [--port N] [--addr A] [--auth] [--quiet]
+
+localhost 3d=~/prj/3d docs=~/notes/site
+<i>http://127.0.0.1:8000/3d/  →  ~/prj/3d
+http://127.0.0.1:8000/docs/  →  ~/notes/site</i></code></pre>
+<p>With no arguments it serves the current directory at <code>/</code>. The root page lists what is mounted. A folder with no <code>index.html</code> gets a plain listing.</p>
+</main>
+<footer><div>This page is one HTML file and makes no other requests. <a href="https://github.com/megamanics/localhost">github.com/megamanics/localhost</a></div></footer>
+</body>
+</html>

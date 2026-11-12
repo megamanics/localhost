@@ -1,0 +1,22 @@
+# Serves your folders at http://127.0.0.1:8000/<folder>/.
+#   docker compose up -d        then open http://127.0.0.1:8000/<folder>/
+# Each folder mounted under /srv becomes http://127.0.0.1:8000/<name>/. Add as many as you like.
+services:
+  localhost:
+    image: megamanics/localhost
+    container_name: localhost
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    env_file:
+      - path: ${HOME}/.config/localhost/env   # optional access token
+        required: false
+    ports:
+      - "127.0.0.1:${LOCALHOST_PORT:-8000}:8000"   # loopback only: other hosts cannot reach it
+    volumes:
+      # Simplest: mount the parent of all your projects once, and new folders appear without a restart.
+      - ${LOCALHOST_ROOT:-${HOME}/prj}:/srv:ro
+      # Or list directories one by one (remove the line above):
+      # - /path/to/site-a:/srv/site-a:ro
+      # - /path/to/site-b:/srv/site-b:ro
